@@ -5,7 +5,8 @@ TEST_URL = "https://jisho.org/search/%E5%AE%B6%20%23kanji"
 
 def main(args):
     """ Scrape for the SVG Stroke Order Diagram for a given Kanji """
-    contents = urllib.request.urlopen(TEST_URL).read().decode()
+    with urllib.request.urlopen(TEST_URL) as f:
+        contents = f.read().decode()
     print(contents)
     print(len(contents.split('\n')))
 
