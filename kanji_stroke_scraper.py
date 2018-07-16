@@ -1,6 +1,7 @@
 from requests_html import HTMLSession
 from lxml import etree
 
+import pyperclip
 import sys
 
 TEST_URL = "https://jisho.org/search/%E5%AE%B6%20%23kanji"
@@ -23,6 +24,7 @@ def main(args):
 
     svg = extract_svg(page.html)
     print(svg)
+    pyperclip.copy(svg)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
