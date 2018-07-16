@@ -32,7 +32,6 @@ def main(args):
     """ Scrape for the SVG Stroke Order Diagram for a given Kanji """
     session = HTMLSession()
     page = session.get(TEST_URL)
-    # page.html.render()
 
     try:
         svg = extract_svg(page.html)
