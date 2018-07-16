@@ -6,6 +6,6 @@ setup(name='kanji_stroke_scraper',
       author='Chris Loew',
       author_email='cloew123@gmail.com',
       #url='http://www.python.org/sigs/distutils-sig/',
-      packages=['kanji_stroke_scraper'],
+      py_modules=['kanji_stroke_scraper'],
       scripts=['scripts/scrapekanjidiagram']
      )
