@@ -5,7 +5,7 @@ import backoff
 import pyperclip
 import sys
 
-TEST_URL = "https://jisho.org/search/%E5%AE%B6%20%23kanji"
+BASE_URL = "https://jisho.org/search/{}%20%23kanji"
 MAX_TRIES = 4
 SVG_SELECTOR = ".stroke_order_diagram--outer_container svg"
 
@@ -30,8 +30,11 @@ def extract_svg(pageHtml):
 
 def main(args):
     """ Scrape for the SVG Stroke Order Diagram for a given Kanji """
+    kanji = args[0]
+
+    url = BASE_URL.format(kanji)
     session = HTMLSession()
-    page = session.get(TEST_URL)
+    page = session.get(url)
 
     try:
         svg = extract_svg(page.html)
