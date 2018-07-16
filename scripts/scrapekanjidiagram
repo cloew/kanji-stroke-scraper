@@ -1,0 +1,11 @@
+#!/usr/bin/python3
+from kanji_stroke_scraper import main
+
+import sys
+
+def main(args):
+    """ Run the main file """
+    main(args)
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
