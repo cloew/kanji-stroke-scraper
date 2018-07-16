@@ -17,6 +17,9 @@ REAPLCEMENTS = {
     'class="stroke_order_diagram--existing_path"': 'style="fill: none; stroke: #aaa; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;"'
 }
 
+class ContentNotFound(Exception):
+    """ Represents an error when the content is not found at all """
+
 class ContentNotReady(Exception):
     """ Represents an early load of a page before the content is ready """
 
@@ -25,6 +28,8 @@ def load_element(pageHtml):
     """ Extract the SVG from the contents """
     pageHtml.render()
     svg = pageHtml.find(SVG_SELECTOR, first=True)
+    if not svg:
+        raise ContentNotFound()
     if 'display: none' in svg.attrs['style']:
         raise ContentNotReady()
     return svg
@@ -51,6 +56,8 @@ def main(args):
 
     try:
         svg = extract_svg(page.html)
+    except ContentNotFound:
+        print('No SVG found for {}'.format(kanji))
     except ContentNotReady:
         print('SVG not found in page')
     else:
