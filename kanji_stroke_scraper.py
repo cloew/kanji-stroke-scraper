@@ -1,8 +1,7 @@
-import sys
-import urllib.request
-from bs4 import BeautifulSoup
 from requests_html import HTMLSession
 from lxml import etree
+
+import sys
 
 TEST_URL = "https://jisho.org/search/%E5%AE%B6%20%23kanji"
 SVG_SELECTOR = ".stroke_order_diagram--outer_container svg"
