@@ -26,7 +26,6 @@ def load_element(pageHtml):
     pageHtml.render()
     svg = pageHtml.find(SVG_SELECTOR, first=True)
     if 'display: none' in svg.attrs['style']:
-        print('Loaded element before it was ready')
         raise ContentNotReady()
     return svg
 
