@@ -23,8 +23,8 @@ def main(args):
     page.html.render()
 
     svg = extract_svg(page.html)
-    print(svg)
     pyperclip.copy(svg)
+    print('SVG saved to Clipboard')
 
 if __name__ == '__main__':
     main(sys.argv[1:])
