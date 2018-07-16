@@ -38,7 +38,8 @@ def extract_svg(pageHtml):
     """ Extract the SVG from the contents """
     svg = load_element(pageHtml)
     lxmlElement = svg.lxml[0] # the lxml element actually has html as the root element rather than the svg, so grab the first child
-    return etree.tostring(lxmlElement, pretty_print=True).decode()
+	
+    return etree.tostring(lxmlElement, method="html", pretty_print=True).decode()
 
 def clean_svg(svg):
     """ Clean the SVG so the classes are replaced with inline styles """

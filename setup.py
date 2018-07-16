@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='kanji_stroke_scraper',
-      version='0.1.00',
+      version='0.1.01',
       #description='Kao Tessur Deck Package',
       author='Chris Loew',
       author_email='cloew123@gmail.com',
