@@ -1,11 +1,9 @@
 from .kanji_svg import KanjiSvg
 
+from cached_property import cached_property
 from requests_html import HTMLSession
-from lxml import etree
 
 import backoff
-import pyperclip
-import sys
 
 BASE_URL = "https://jisho.org/search/{}%20%23kanji"
 MAX_TRIES = 4
@@ -18,43 +16,41 @@ class ContentNotFound(Exception):
 class ContentNotReady(Exception):
     """ Represents an early load of a page before the content is ready """
 
-@backoff.on_exception(backoff.expo, ContentNotReady, max_tries=MAX_TRIES)
-def load_element(pageHtml):
-    """ Extract the SVG from the contents """
-    pageHtml.render()
-    svg = pageHtml.find(SVG_SELECTOR, first=True)
-    if not svg:
-        raise ContentNotFound()
-    if 'display: none' in svg.attrs['style']:
-        raise ContentNotReady()
-    return svg
+class KanjiStrokeScraper:
+    """ Helper class to scrape the Kanji Strokes from Jsiho.org """
 
-def extract_svg(pageHtml):
-    """ Extract the SVG from the contents """
-    svg = load_element(pageHtml)
-    lxmlElement = svg.lxml[0] # the lxml element actually has html as the root element rather than the svg, so grab the first child
+    def scrape(self, kanji):
+        """ Scrape the given Kanji """
+        url = BASE_URL.format(kanji)
+        page = self.html_session.get(url)
 
-    return KanjiSvg(lxmlElement)
-    
-    return etree.tostring(lxmlElement, method="html", pretty_print=True).decode()
+        try:
+            svg = self.extract_svg(page.html)
+        except ContentNotFound:
+            print('No SVG found for {}'.format(kanji))
+        except ContentNotReady:
+            print('SVG not found in page')
+        return svg
 
-def main(args):
-    """ Scrape for the SVG Stroke Order Diagram for a given Kanji """
-    kanji = args[0]
+    @cached_property
+    def html_session(self):
+        """ Return the Html Session for this Scraper """
+        return HTMLSession()
 
-    url = BASE_URL.format(kanji)
-    session = HTMLSession()
-    page = session.get(url)
+    def extract_svg(self, pageHtml):
+        """ Extract the SVG from the contents """
+        svg = self.load_element(pageHtml)
+        lxmlElement = svg.lxml[0] # the lxml element actually has html as the root element rather than the svg, so grab the first child
 
-    try:
-        svg = extract_svg(page.html)
-    except ContentNotFound:
-        print('No SVG found for {}'.format(kanji))
-    except ContentNotReady:
-        print('SVG not found in page')
-    else:
-        pyperclip.copy(str(svg))
-        print('SVG saved to Clipboard')
+        return KanjiSvg(lxmlElement)
 
-if __name__ == '__main__':
-    main(sys.argv[1:])
+    @backoff.on_exception(backoff.expo, ContentNotReady, max_tries=MAX_TRIES)
+    def load_element(self, pageHtml):
+        """ Extract the SVG from the contents """
+        pageHtml.render()
+        svg = pageHtml.find(SVG_SELECTOR, first=True)
+        if not svg:
+            raise ContentNotFound()
+        if 'display: none' in svg.attrs['style']:
+            raise ContentNotReady()
+        return svg

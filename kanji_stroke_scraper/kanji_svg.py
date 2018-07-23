@@ -9,7 +9,7 @@ REPLACEMENTS = {
 }
 
 class KanjiSvg:
-    """ Helper class to mange the Kanji Svg retrieved from Jisho.org """
+    """ Represents the Kanji Svg retrieved from Jisho.org """
 
     def __init__(self, xml):
         """ Initialize with the xml """

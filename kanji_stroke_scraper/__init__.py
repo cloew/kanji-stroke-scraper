@@ -1,1 +1,1 @@
-from .kanji_stroke_scraper import main
+from .kanji_stroke_scraper import KanjiStrokeScraper, ContentNotFound, ContentNotReady
