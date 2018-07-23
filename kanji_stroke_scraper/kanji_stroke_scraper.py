@@ -1,3 +1,5 @@
+from .kanji_svg import KanjiSvg
+
 from requests_html import HTMLSession
 from lxml import etree
 
@@ -9,13 +11,6 @@ BASE_URL = "https://jisho.org/search/{}%20%23kanji"
 MAX_TRIES = 4
 SVG_SELECTOR = ".stroke_order_diagram--outer_container svg"
 
-REAPLCEMENTS = {
-    'class="stroke_order_diagram--bounding_box"': 'style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;"',
-    'class="stroke_order_diagram--guide_line"': 'style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square; stroke-linejoin: square; stroke-dasharray: 5, 5;"',
-    'class="stroke_order_diagram--current_path"': 'style="fill: none; stroke: #000; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;"',
-    'class="stroke_order_diagram--path_start"': 'style="fill: rgba(255,0,0,0.7); stroke: none;"',
-    'class="stroke_order_diagram--existing_path"': 'style="fill: none; stroke: #aaa; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;"'
-}
 
 class ContentNotFound(Exception):
     """ Represents an error when the content is not found at all """
@@ -38,14 +33,10 @@ def extract_svg(pageHtml):
     """ Extract the SVG from the contents """
     svg = load_element(pageHtml)
     lxmlElement = svg.lxml[0] # the lxml element actually has html as the root element rather than the svg, so grab the first child
-	
-    return etree.tostring(lxmlElement, method="html", pretty_print=True).decode()
 
-def clean_svg(svg):
-    """ Clean the SVG so the classes are replaced with inline styles """
-    for classAttr, styleAttr in REAPLCEMENTS.items():
-        svg = svg.replace(classAttr, styleAttr)
-    return svg
+    return KanjiSvg(lxmlElement)
+    
+    return etree.tostring(lxmlElement, method="html", pretty_print=True).decode()
 
 def main(args):
     """ Scrape for the SVG Stroke Order Diagram for a given Kanji """
@@ -62,8 +53,7 @@ def main(args):
     except ContentNotReady:
         print('SVG not found in page')
     else:
-        svg = clean_svg(svg)
-        pyperclip.copy(svg)
+        pyperclip.copy(str(svg))
         print('SVG saved to Clipboard')
 
 if __name__ == '__main__':
