@@ -19,13 +19,13 @@ class ContentNotReady(Exception):
 class KanjiStrokeScraper:
     """ Helper class to scrape the Kanji Strokes from Jsiho.org """
 
-    def scrape(self, kanji):
+    def scrape(self, kanji, start, end):
         """ Scrape the given Kanji """
         url = BASE_URL.format(kanji)
         page = self.html_session.get(url)
 
         try:
-            svg = self.extract_svg(page.html)
+            svg = self.extract_svg(page.html, start, end)
         except ContentNotFound:
             print('No SVG found for {}'.format(kanji))
         except ContentNotReady:
@@ -37,12 +37,12 @@ class KanjiStrokeScraper:
         """ Return the Html Session for this Scraper """
         return HTMLSession()
 
-    def extract_svg(self, pageHtml):
+    def extract_svg(self, pageHtml, start, end):
         """ Extract the SVG from the contents """
         svg = self.load_element(pageHtml)
         lxmlElement = svg.lxml[0] # the lxml element actually has html as the root element rather than the svg, so grab the first child
 
-        return KanjiSvg(lxmlElement)
+        return KanjiSvg(lxmlElement, start=start, end=end)
 
     @backoff.on_exception(backoff.expo, ContentNotReady, max_tries=MAX_TRIES)
     def load_element(self, pageHtml):
