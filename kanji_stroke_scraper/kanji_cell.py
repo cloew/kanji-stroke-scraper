@@ -9,14 +9,10 @@ class KanjiCell:
         self.circle = elements[-1]
 
         numExtraPaths = len(elements)-5
-        print(numExtraPaths)
         self.extraPaths = elements[2:-3]
 
         self.index = numExtraPaths
 
     def build(self, index):
         """ Build the KanjiCell for the given index in a new SVG """
-        print(index)
-        print(self.extraPaths)
-        print(self.extraPaths[self.index-index:] == self.extraPaths)
         return self.lines + self.extraPaths[self.index-index:] + self.corePaths + [self.circle]

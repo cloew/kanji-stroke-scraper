@@ -14,9 +14,12 @@ REPLACEMENTS = {
 class KanjiSvg:
     """ Represents the Kanji Svg retrieved from Jisho.org """
 
-    def __init__(self, xml):
+    def __init__(self, xml, start=0, end=None):
         """ Initialize with the xml """
-        # self.xml = xml
+        self.start = start
+        self.end = end
+
+
         elements = list(xml)
         cells = []
         elementsInCurrentCell = []
@@ -31,14 +34,18 @@ class KanjiSvg:
     @cached_property
     def xml(self):
         """ Build the XML for this KanJI SVG """
-        width = len(self.cells)*100
-        root = etree.Element("svg", style="height: 100px; width: {}px;".format(width), viewbox="0 0 {} 100".format(width))
-        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(width-1), y1="1", y2="1"))
-        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2="1", y1="1", y2="99"))
-        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(width-1), y1="99", y2="99"))
-        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square; stroke-linejoin: square; stroke-dasharray: 5, 5;", x1="0", x2=str(width), y1="50", y2="50"))
+        cells = self.cells[self.start:self.end]
+        startOffset = self.start*100
+        fullWidth = len(self.cells)*100
+        viewWidth = len(cells)*100
 
-        for i, cell in enumerate(self.cells):
+        root = etree.Element("svg", style="height: 100px; width: {}px;".format(viewWidth), viewbox="{} 0 {} 100".format(startOffset, viewWidth))
+        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(fullWidth-1), y1="1", y2="1"))
+        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1=str(startOffset+1), x2=str(startOffset+1), y1="1", y2="99"))
+        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(fullWidth-1), y1="99", y2="99"))
+        root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square; stroke-linejoin: square; stroke-dasharray: 5, 5;", x1="0", x2=str(fullWidth), y1="50", y2="50"))
+
+        for i, cell in enumerate(cells):
             root.extend(cell.build(i))
         return root
 
