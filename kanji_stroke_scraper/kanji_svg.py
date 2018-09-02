@@ -40,6 +40,11 @@ class KanjiSvg:
         viewWidth = len(cells)*100
 
         root = etree.Element("svg", style="height: 100px; width: {}px;".format(viewWidth), viewbox="{} 0 {} 100".format(startOffset, viewWidth))
+        
+        descriptionElement = etree.Element("desc")
+        descriptionElement.text = "Kanji SVG from Jisho.org"
+        root.append(descriptionElement)
+
         root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(fullWidth-1), y1="1", y2="1"))
         root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1=str(startOffset+1), x2=str(startOffset+1), y1="1", y2="99"))
         root.append(etree.Element("line", style="fill: none; stroke: #ddd; stroke-width: 2; stroke-linecap: square;", x1="1", x2=str(fullWidth-1), y1="99", y2="99"))
