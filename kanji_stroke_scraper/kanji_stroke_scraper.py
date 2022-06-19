@@ -9,6 +9,9 @@ BASE_URL = "https://jisho.org/search/{}%20%23kanji"
 MAX_TRIES = 4
 SVG_SELECTOR = ".stroke_order_diagram--outer_container svg"
 
+JLPT_SELECTOR = ".jlpt strong"
+FREQUENCY_SELECTOR = ".frequency strong"
+
 
 class ContentNotFound(Exception):
     """ Represents an error when the content is not found at all """
@@ -30,6 +33,10 @@ class KanjiStrokeScraper:
             print('No SVG found for {}'.format(kanji))
         except ContentNotReady:
             print('SVG not found in page')
+            
+        # jlpt = page.html.find(JLPT_SELECTOR, first=True).text
+        # frequency = page.html.find(FREQUENCY_SELECTOR, first=True).text.split()[0]
+        # return f"Add {kanji} ({frequency}, , {jlpt})"
         return svg
 
     @cached_property
