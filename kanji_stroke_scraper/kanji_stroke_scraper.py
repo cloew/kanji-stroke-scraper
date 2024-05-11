@@ -7,6 +7,7 @@ import backoff
 
 BASE_URL = "https://jisho.org/search/{}%20%23kanji"
 MAX_TRIES = 4
+SVG_CONTAINER_SELECTOR = ".stroke_order_diagram--outer_container"
 SVG_SELECTOR = ".stroke_order_diagram--outer_container svg"
 
 JLPT_SELECTOR = ".jlpt strong"
@@ -59,5 +60,6 @@ class KanjiStrokeScraper:
         if not svg:
             raise ContentNotFound()
         if 'display: none' in svg.attrs['style']:
+            print('SVG is still hidden')
             raise ContentNotReady()
         return svg

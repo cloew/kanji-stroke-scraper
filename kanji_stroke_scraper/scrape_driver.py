@@ -1,16 +1,12 @@
 from .kanji_stroke_scraper import KanjiStrokeScraper, ContentNotFound, ContentNotReady
+from .kanji_svg import KanjiSvg
 import argparse
 import pyperclip
 
-def run(args):
-    """ Scrape the Kanji """
-    parser = argparse.ArgumentParser(description="Scrape the SVG diagram for a Kanji from jisho.org")
-    parser.add_argument('kanji')
-    parser.add_argument('--start', '-s', default=1)
-    parser.add_argument('--end', '-e', type=int)
+from lxml import etree as ET
 
-    parsedArgs = parser.parse_args(args)
 
+def scrape(parsedArgs):
     kanji = parsedArgs.kanji
     start = int(parsedArgs.start) - 1
     end = parsedArgs.end
@@ -26,3 +22,29 @@ def run(args):
     else:
         pyperclip.copy(str(svg))
         print('SVG saved to Clipboard')
+        
+def convert_svg(parsedArgs):
+    with open(parsedArgs.kanji, encoding='utf-8') as file:
+        svg = file.read()
+        start = int(parsedArgs.start) - 1
+        end = parsedArgs.end
+        
+        lxmlElement = ET.fromstring(svg)
+        svg = KanjiSvg(lxmlElement, start=start, end=end)
+        pyperclip.copy(str(svg))
+        print('SVG saved to Clipboard')
+
+def run(args):
+    """ Scrape the Kanji """
+    parser = argparse.ArgumentParser(description="Scrape the SVG diagram for a Kanji from jisho.org")
+    parser.add_argument('kanji')
+    parser.add_argument('--start', '-s', default=1)
+    parser.add_argument('--end', '-e', type=int)
+    parser.add_argument('-svg', type=bool)
+
+    parsedArgs = parser.parse_args(args)
+    
+    if parsedArgs.svg:
+        convert_svg(parsedArgs)
+    else:
+        scrape(parsedArgs)
