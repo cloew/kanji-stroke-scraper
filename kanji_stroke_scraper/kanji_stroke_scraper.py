@@ -23,10 +23,8 @@ class ContentNotReady(Exception):
 class KanjiStrokeScraper:
     """ Helper class to scrape the Kanji Strokes from Jsiho.org """
 
-    def scrape(self, kanji, start, end):
-        """ Scrape the given Kanji """
-        url = BASE_URL.format(kanji)
-        page = self.html_session.get(url)
+    def scrape_svg(self, kanji, start, end):
+        page = self.get_page(kanji)
 
         try:
             svg = self.extract_svg(page.html, start, end)
@@ -35,10 +33,19 @@ class KanjiStrokeScraper:
         except ContentNotReady:
             print('SVG not found in page')
             
-        # jlpt = page.html.find(JLPT_SELECTOR, first=True).text
-        # frequency = page.html.find(FREQUENCY_SELECTOR, first=True).text.split()[0]
-        # return f"Add {kanji} ({frequency}, , {jlpt})"
         return svg
+        
+    def scrape_kanji_info(self, kanji):
+        page = self.get_page(kanji)
+        
+        jlpt = page.html.find(JLPT_SELECTOR, first=True).text
+        frequency = page.html.find(FREQUENCY_SELECTOR, first=True).text.split()[0]
+        return f"Add {kanji} ({frequency}, , {jlpt})"
+        
+    def get_page(self, kanji):
+        url = BASE_URL.format(kanji)
+        return self.html_session.get(url)
+        
 
     @cached_property
     def html_session(self):
